@@ -38,22 +38,14 @@ public class VendingMachineController {
 
     @Bean
     public static ProductStorage sample() {
-        ProductStorage storage = new MapProductStorage();
-        storage.loadOnShelf(1, new Product("Woda", Price.fromCents(100)));
-        storage.loadOnShelf(1, new Product("Woda", Price.fromCents(100)));
-        storage.loadOnShelf(1, new Product("Cola", Price.fromCents(250)));
-        storage.loadOnShelf(2, new Product("Cola", Price.fromCents(250)));
-        storage.loadOnShelf(2, new Product("Cola", Price.fromCents(250)));
-        storage.loadOnShelf(2, new Product("Baton", Price.fromCents(160)));
-        storage.loadOnShelf(3, new Product("Baton", Price.fromCents(160)));
-        storage.loadOnShelf(3, new Product("Baton", Price.fromCents(160)));
+        ProductStorage storage = null;
         return storage;
     }
 
     @Bean
     @Autowired
-    public static VendingMachine vendingMachine(ProductStorage productStorage) {
-        return new VendingMachine(productStorage, new CoinDispenser(), new ProductFeeder());
+    public static VendingMachine vendingMachine() {
+        return new VendingMachine();
     }
 
     @Autowired
@@ -69,14 +61,7 @@ public class VendingMachineController {
             produces = "application/json")
     public @ResponseBody
     Response selectProduct(@RequestBody Integer shelfNumber) {
-
-        try {
-            vendingMachine.select(shelfNumber);
-            return Response.success();
-
-        } catch (Exception e) {
-            return Response.failure(e.getMessage());
-        }
+        return Response.failure("Not implemented");
     }
 
     // wrzucenie monety o zadanym nominale
@@ -86,18 +71,7 @@ public class VendingMachineController {
             produces = "application/json")
     @ResponseBody
     public Response insertCoin(@RequestBody String coin) {
-
-        try {
-            Optional<Coin> coinOptional = Coin.fromString(coin.replace("\"", ""));
-            if (coinOptional.isPresent()) {
-                vendingMachine.insert(coinOptional.get());
-                return Response.success();
-            } else {
-                return Response.failure(String.format("Invalid argument: '%s'", coin));
-            }
-        } catch (Exception e) {
-            return Response.failure(e.getMessage());
-        }
+        return Response.failure("Not implemented");
     }
 
     @RequestMapping(value = "/vending-machine/state",
@@ -105,18 +79,12 @@ public class VendingMachineController {
             produces = "application/json")
     @ResponseBody
     public VendingMachineDTO state() {
-        return new VendingMachineDTO(vendingMachine.getDisplay(), buildDTO(productStorage));
+        return new VendingMachineDTO("", buildDTO(productStorage));
     }
 
     private StorageDTO buildDTO(ProductStorage productStorage) {
 
         StorageDTO storage = new StorageDTO();
-
-        for (int shelfNumber = 1; shelfNumber <= MAX_SHELF_NUMBER; shelfNumber++) {
-            Optional<Product> product = productStorage.productOnShelf(shelfNumber);
-            if (product.isPresent())
-                storage.addShelf(shelfNumber, product.get(), productStorage.itemsOnShelf(shelfNumber));
-        }
 
         return storage;
     }
