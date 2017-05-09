@@ -1,0 +1,108 @@
+<html>
+<head>
+    <title>Vending Machine</title>
+    <link rel="stylesheet" type="text/css" href="/css/vending-machine.css"/>
+</head>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
+      integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous"/>
+<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
+        integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"
+        integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
+        integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+        crossorigin="anonymous"></script>
+
+<body>
+<div id="vending-machine">
+
+    <div id="display">
+        <div>Display:</div>
+        <div id="equalizer"></div>
+    </div>
+    <div id="storage"></div>
+    <div id="buttons">
+        <div>Push button:</div>
+        <a class="btn btn-secondary" href="#" onclick="pushButton(1);">1</a>
+        <a class="btn btn-secondary" href="#" onclick="pushButton(2);">2</a>
+        <a class="btn btn-secondary" href="#" onclick="pushButton(3);">3</a>
+        <a class="btn btn-secondary" href="#" onclick="pushButton(4);">4</a>
+        <a class="btn btn-secondary" href="#" onclick="pushButton(5);">5</a>
+        <a class="btn btn-secondary" href="#" onclick="pushButton(6);">6</a>
+        <a class="btn btn-secondary" href="#" onclick="pushButton(7);">7</a>
+        <a class="btn btn-secondary" href="#" onclick="pushButton(8);">8</a>
+        <a class="btn btn-secondary" href="#" onclick="pushButton(9);">9</a>
+    </div>
+    <div id="coins">
+        <div>Insert coin:</div>
+        <a href="#" id="FIVE_DOLLAR" onclick="insertCoin(this.id)">5,00 <small>PLN</small></a>
+        <a href="#" id="TWO_DOLLAR" onclick="insertCoin(this.id)">2,00 <small>PLN</small></a>
+        <a href="#" id="ONE_DOLLAR" onclick="insertCoin(this.id)">1,00 <small>PLN</small></a>
+        <a href="#" id="FIFTY_CENTS" onclick="insertCoin(this.id)">0,50 <small>PLN</small></a>
+        <a href="#" id="TWENTY_CENTS" onclick="insertCoin(this.id)">0,20 <small>PLN</small></a>
+        <a href="#" id="TEN_CENTS" onclick="insertCoin(this.id)">0,10 <small>PLN</small></a>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<script>
+
+    $(document).ready(function () {
+
+        loadState();
+
+    });
+
+    var loadState = function () {
+        var storageDiv = $("#storage");
+        storageDiv.empty();
+
+        $.getJSON("/vending-machine/state", function (data) {
+
+            $("#equalizer").html(data.display);
+
+            $.each(data.storage.shelfs, function (key, shelf) {
+                console.log("key=" + key);
+                //var d = "<div id='" + key + "'/>";
+                var d = '<div id="' + key + '"/>';
+                var shelfDiv = $(d);
+
+                shelfDiv.append('<div class="slot">' + key + ':</div>');
+                shelfDiv.append('<div class="product">' + shelf.product.name + '(' + shelf.items + ')</div>');
+                shelfDiv.appendTo(storageDiv);
+            });
+        });
+    }
+
+    var post = function (url, data) {
+        $.ajax({
+            "url": url,
+            "type": "POST",
+            "dataType": "json",
+            "contentType": "application/json",
+            "data": JSON.stringify(data),
+            "success": function () {
+                loadState();
+            }
+        });
+    }
+
+    var insertCoin = function (coin) {
+
+        console.log("insert: " + coin);
+        post("/vending-machine/insert", coin);
+
+    };
+
+    var pushButton = function (button) {
+
+        console.log("push: " + button);
+        post("/vending-machine/push", button);
+    };
+
+</script>
+</body>
+</html>
