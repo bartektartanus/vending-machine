@@ -32,7 +32,6 @@ public class VendingMachineController {
     @RequestMapping("/vending-machine")
     public ModelAndView page() {
         ModelAndView model = new ModelAndView("vending-machine");
-        model.getModelMap().put("coins", Coin.values());
         return model;
     }
 
@@ -63,6 +62,7 @@ public class VendingMachineController {
         this.productStorage = productStorage;
     }
 
+    // wybranie przycisku z półką na automacie
     @RequestMapping(value = "/vending-machine/push",
             method = RequestMethod.POST,
             consumes = "application/json",
@@ -79,12 +79,13 @@ public class VendingMachineController {
         }
     }
 
+    // wrzucenie monety o zadanym nominale
     @RequestMapping(value = "/vending-machine/insert",
             method = RequestMethod.POST,
             consumes = "application/json",
             produces = "application/json")
-    public @ResponseBody
-    Response insertCoin(@RequestBody String coin) {
+    @ResponseBody
+    public Response insertCoin(@RequestBody String coin) {
 
         try {
             Optional<Coin> coinOptional = Coin.fromString(coin.replace("\"", ""));
@@ -102,8 +103,8 @@ public class VendingMachineController {
     @RequestMapping(value = "/vending-machine/state",
             method = RequestMethod.GET,
             produces = "application/json")
-    public @ResponseBody
-    VendingMachineDTO state() {
+    @ResponseBody
+    public VendingMachineDTO state() {
         return new VendingMachineDTO(vendingMachine.getDisplay(), buildDTO(productStorage));
     }
 
@@ -120,6 +121,7 @@ public class VendingMachineController {
         return storage;
     }
 
+    // pomocniczne klasy DTO dla GUI
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
     public static class VendingMachineDTO {
 
