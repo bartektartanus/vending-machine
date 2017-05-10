@@ -45,7 +45,9 @@ public class VendingMachineController {
     @Bean
     @Autowired
     public static VendingMachine vendingMachine() {
-        return new VendingMachine();
+        VendingMachine vendingMachine = new VendingMachine();
+        vendingMachine.putOnShelf(1, new Product("Cola", Price.fromCents(250)), 5);
+        return vendingMachine;
     }
 
     @Autowired
@@ -61,7 +63,8 @@ public class VendingMachineController {
             produces = "application/json")
     public @ResponseBody
     Response selectProduct(@RequestBody Integer shelfNumber) {
-        return Response.failure("Not implemented");
+        vendingMachine.pushButton(shelfNumber);
+        return Response.success();
     }
 
     // wrzucenie monety o zadanym nominale
@@ -79,7 +82,7 @@ public class VendingMachineController {
             produces = "application/json")
     @ResponseBody
     public VendingMachineDTO state() {
-        return new VendingMachineDTO("", buildDTO(productStorage));
+        return new VendingMachineDTO(vendingMachine.getDisplay(), buildDTO(productStorage));
     }
 
     private StorageDTO buildDTO(ProductStorage productStorage) {

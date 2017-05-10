@@ -1,14 +1,19 @@
 package tdd.training.domain;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-import java.io.Serializable;
-import java.util.regex.Pattern;
-
-@JsonAutoDetect(fieldVisibility= JsonAutoDetect.Visibility.ANY)
 public class Price {
 
+    private int cents;
 
+    private Price(int cents) {
+        this.cents = cents;
+    }
+
+    public static Price fromCents(int i) {
+        return new Price(i);
+    }
+
+    @Override
+    public String toString() {
+        return cents/100 + "," + String.format("%02d", cents % 100) + "$";
+    }
 }
